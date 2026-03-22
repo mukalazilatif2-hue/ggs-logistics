@@ -1,0 +1,8 @@
+{
+  "name": "ggs-logistics",
+  "version": "1.0.0",
+  "description": "GGS Logistics — Unified Transport & Lending ERP",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0"
+  }
+}
