@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GGS Logistics — Operations Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0C1018;
+  --ink2:#131A24;
+  --ink3:#1C2535;
+  --ink4:#243040;
+
+  --border:rgba(255,255,255,0.065);
+  --border2:rgba(255,255,255,0.035);
+  --border-strong:rgba(255,255,255,0.11);
+
+  --gold:#C99A14;
+  --gold2:#DDB02A;
+  --gold-dim:rgba(201,154,20,0.09);
+  --gold-text:#EAC84A;
+
+  --white:#ECF3FF;
+  --text-secondary:#8A9BB5;
+  --text-muted:#445166;
+
+  --green:#21B558;  --green-bg:rgba(33,181,88,0.08);  --green-border:rgba(33,181,88,0.18);
+  --red:#E84040;    --red-bg:rgba(232,64,64,0.08);    --red-border:rgba(232,64,64,0.18);
+  --blue:#5B9CF6;   --blue-bg:rgba(91,156,246,0.08);  --blue-border:rgba(91,156,246,0.18);
+  --orange:#F08535; --orange-bg:rgba(240,133,53,0.08);--orange-border:rgba(240,133,53,0.18);
+  --purple:#9B7EF5; --purple-bg:rgba(155,126,245,0.08);--purple-border:rgba(155,126,245,0.18);
+
+  --muted:var(--text-secondary);
+  --muted2:var(--text-muted);
+
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.5);
+  --shadow-md:0 8px 24px rgba(0,0,0,0.5),0 2px 6px rgba(0,0,0,0.35);
+  --shadow-card:inset 0 1px 0 rgba(255,255,255,0.04);
+
+  --radius:8px;
+  --radius-sm:6px;
+  --section-gap:24px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.5;background:var(--ink);color:var(--white);overflow:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:58px 1fr;height:100vh;}
+.topbar{grid-column:1/-1;background:var(--ink2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:100;}
+.sidebar{background:var(--ink2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.main{overflow-y:auto;background:var(--ink);}
+
+/* TOPBAR */
+.tb-logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:15px;color:var(--white);letter-spacing:-0.03em;display:flex;align-items:center;gap:7px;}
+.tb-logo::before{content:'';display:block;width:8px;height:8px;background:var(--gold-text);border-radius:2px;flex-shrink:0;}
+.tb-logo span{color:var(--text-secondary);font-weight:400;}
+.tb-divider{width:1px;height:16px;background:var(--border);}
+.tb-title{font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:0.005em;}
+.tb-space{flex:1;}
+.tb-badge{background:transparent;border:1px solid var(--border);color:var(--text-muted);font-size:10px;font-weight:500;padding:3px 9px;border-radius:4px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;}
+.tb-user{display:flex;align-items:center;gap:10px;}
+.tb-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--ink3);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-text);flex-shrink:0;}
+.tb-user-info{text-align:right;}
+.tb-user-name{font-size:12.5px;font-weight:600;color:var(--white);letter-spacing:-0.01em;line-height:1.2;}
+.tb-user-role{font-size:10.5px;color:var(--text-muted);line-height:1.2;}
+
+/* SIDEBAR */
+.sb-section{padding:22px 0 2px;}
+.sb-section:first-child{padding-top:16px;}
+.sb-label{
+  font-size:9px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-muted);padding:0 16px;margin-bottom:6px;
+  font-family:'JetBrains Mono',monospace;
+}
+.sb-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 16px;
+  font-size:12.5px;font-weight:400;
+  color:var(--text-muted);
+  cursor:pointer;
+  border-left:2px solid transparent;
+  transition:color 0.1s,background 0.1s;
+  letter-spacing:-0.01em;line-height:1.5;
+  margin:1px 0;
+}
+.sb-item:hover{color:var(--text-secondary);background:rgba(255,255,255,0.025);}
+.sb-item.active{
+  color:var(--white);
+  border-left-color:var(--gold);
+  background:rgba(255,255,255,0.04);
+  font-weight:600;
+}
+.sb-ico{font-size:13px;width:16px;text-align:center;flex-shrink:0;opacity:0.5;}
+.sb-item:hover .sb-ico{opacity:0.75;}
+.sb-item.active .sb-ico{opacity:1;}
+.sb-bottom{
+  margin-top:auto;padding:18px 16px;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:16px;
+}
+.sb-stat{}
+.sb-stat-label{
+  font-size:9px;color:var(--text-muted);letter-spacing:0.12em;
+  text-transform:uppercase;font-family:'JetBrains Mono',monospace;
+  margin-bottom:3px;line-height:1;
+}
+.sb-stat-val{
+  font-size:18px;font-weight:700;color:var(--white);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  line-height:1.15;letter-spacing:-0.03em;
+}
+.sb-stat-sub{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.3;}
+
+/* VIEWS */
+.view{display:none;padding:32px 36px 48px;flex-direction:column;gap:22px;}
+.view.active{display:flex;}
+
+/* PAGE HEADER */
+.page-hd{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:16px;padding-bottom:20px;
+  border-bottom:1px solid var(--border2);
+  margin-bottom:4px;
+}
+.page-hd-left{}
+.page-title{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:21px;font-weight:700;
+  color:var(--white);line-height:1.1;letter-spacing:-0.04em;
+}
+.page-sub{
+  font-size:12px;color:var(--text-muted);
+  margin-top:5px;line-height:1.5;font-weight:400;
+}
+.page-actions{display:flex;gap:8px;flex-shrink:0;align-items:center;}
+
+/* BUTTONS */
+.btn{border:none;padding:8px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border-radius:var(--radius-sm);letter-spacing:-0.005em;transition:all 0.12s;display:inline-flex;align-items:center;gap:6px;line-height:1;}
+.btn-primary{background:var(--gold);color:#0B0F17;}
+.btn-primary:hover{background:var(--gold2);box-shadow:0 0 0 3px rgba(212,160,23,0.2);}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid var(--border-strong);}
+.btn-ghost:hover{background:var(--ink3);color:var(--white);border-color:var(--text-muted);}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.btn-sm{padding:6px 12px;font-size:11.5px;}
+
+/* STAT GRID */
+.stat-grid{display:grid;gap:12px;}
+.stat-grid-4{grid-template-columns:repeat(4,1fr);}
+.stat-grid-3{grid-template-columns:repeat(3,1fr);}
+.stat-grid-5{grid-template-columns:repeat(5,1fr);}
+.sc{
+  background:var(--ink2);
+  border:1px solid var(--border);
+  padding:22px 22px 18px;
+  border-radius:var(--radius);
+  position:relative;
+  overflow:hidden;
+  box-shadow:var(--shadow-sm),var(--shadow-card);
+}
+/* Accent stripe — thinner, softer */
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+.sc.gold::before{background:linear-gradient(90deg,var(--gold) 0%,transparent 100%);}
+.sc.green::before{background:linear-gradient(90deg,var(--green) 0%,transparent 100%);}
+.sc.red::before{background:linear-gradient(90deg,var(--red) 0%,transparent 100%);}
+.sc.blue::before{background:linear-gradient(90deg,var(--blue) 0%,transparent 100%);}
+.sc.purple::before{background:linear-gradient(90deg,var(--purple) 0%,transparent 100%);}
+.sc.orange::before{background:linear-gradient(90deg,var(--orange) 0%,transparent 100%);}
+/* Label */
+.sc-label{
+  font-size:10px;font-weight:500;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text-muted);
+  margin-bottom:12px;font-family:'JetBrains Mono',monospace;line-height:1;
+}
+/* Primary value */
+.sc-val{
+  font-size:24px;font-weight:700;color:var(--white);
+  line-height:1;font-family:'Plus Jakarta Sans',sans-serif;
+  letter-spacing:-0.04em;
+}
+.sc.gold .sc-val{color:var(--gold-text);}
+.sc.green .sc-val{color:var(--green);}
+.sc.red .sc-val{color:var(--red);}
+.sc.blue .sc-val{color:var(--blue);}
+.sc.purple .sc-val{color:var(--purple);}
+.sc.orange .sc-val{color:var(--orange);}
+/* Supporting text */
+.sc-sub{
+  font-size:11px;color:var(--text-muted);
+  margin-top:7px;line-height:1.4;font-weight:400;
+}
+
+/* TABLE */
+.tbl-wrap{
+  background:var(--ink2);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow-sm),var(--shadow-card);
+}
+.tbl-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 20px;border-bottom:1px solid var(--border);
+}
+.tbl-hd-title{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:600;color:var(--white);letter-spacing:-0.02em;
+}
+.tbl-search{
+  background:var(--ink3);border:1px solid var(--border);
+  color:var(--white);padding:6px 12px;border-radius:var(--radius-sm);
+  font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;
+  width:190px;transition:border-color 0.12s,box-shadow 0.12s;
+}
+.tbl-search::placeholder{color:var(--text-muted);}
+.tbl-search:focus{outline:none;border-color:rgba(201,154,20,0.4);box-shadow:0 0 0 2px rgba(201,154,20,0.08);}
+table{width:100%;border-collapse:collapse;}
+thead th{
+  background:var(--ink3);
+  text-align:left;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text-muted);
+  padding:10px 20px;
+  border-bottom:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+tbody td{
+  padding:13px 20px;
+  border-bottom:1px solid var(--border2);
+  vertical-align:middle;
+  font-size:12.5px;
+  line-height:1.45;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:var(--text-secondary);
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(255,255,255,0.018);cursor:pointer;}
+tbody tr:hover td:first-child{color:var(--white);}
+
+/* BADGES */
+.badge{
+  display:inline-flex;align-items:center;
+  font-size:10px;font-weight:500;
+  padding:2px 8px;
+  border-radius:20px;
+  letter-spacing:0.03em;
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;line-height:1.7;
+}
+.b-pending{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border);}
+.b-inprogress{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+.b-delivered{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.b-paid{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.b-partial{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-border);}
+.b-unpaid{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.b-active{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);}
+.b-overdue{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);animation:pulse 2.5s ease-in-out infinite;}
+.b-cleared{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(7,11,18,0.75);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--ink2);
+  border:1px solid var(--border-strong);
+  border-radius:10px;
+  width:680px;
+  max-width:95vw;
+  max-height:90vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:var(--shadow-md),0 0 0 1px rgba(255,255,255,0.04);
+}
+.modal-lg{width:820px;}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--white);letter-spacing:-0.02em;}
+.modal-x{background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1;border-radius:4px;transition:all 0.12s;}
+.modal-x:hover{color:var(--white);background:var(--ink3);}
+.modal-body{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+.modal-ft{padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0;background:var(--ink3);border-radius:0 0 10px 10px;}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:10px;font-weight:500;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;line-height:1.5;}
+.fg input,.fg select,.fg textarea{
+  background:var(--ink3);
+  border:1px solid var(--border);
+  color:var(--white);
+  padding:9px 13px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:border-color 0.12s,box-shadow 0.12s;
+  line-height:1.4;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  outline:none;
+  border-color:rgba(212,160,23,0.5);
+  box-shadow:0 0 0 3px rgba(212,160,23,0.1);
+}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--text-muted);}
+.fg textarea{resize:vertical;min-height:72px;}
+.fg select option{background:var(--ink3);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.form-section{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  font-weight:600;
+  color:var(--text-muted);
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+  margin-top:4px;
+}
+
+/* COSTS TABLE inside modal */
+.cost-list{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.cost-item{display:grid;grid-template-columns:1fr 120px 110px 32px;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border2);font-size:12px;}
+.cost-item:last-child{border-bottom:none;}
+.cost-hd{background:var(--ink3);font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+.cost-total-row{padding:8px 12px;background:var(--ink3);display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;}
+
+/* DASHBOARD CHART BAR */
+.chart-wrap{
+  background:var(--ink2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 24px;
+  box-shadow:var(--shadow-sm),var(--shadow-card);
+}
+.chart-title{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;font-weight:500;color:var(--text-muted);
+  margin-bottom:18px;letter-spacing:0.01em;
+  text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;
+}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:96px;}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.bar{
+  background:var(--ink4);border-radius:2px 2px 0 0;
+  width:100%;min-height:3px;transition:height 0.4s ease;
+}
+.bar-col:last-child .bar{background:var(--gold);opacity:0.9;}
+.bar-label{font-size:9px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.03em;}
+.bar-val{font-size:9px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-weight:400;}
+.bar-col:last-child .bar-val{color:var(--gold-text);font-weight:500;}
+
+/* LOAN CARD */
+.loan-card{
+  background:var(--ink2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px 22px;
+  cursor:pointer;
+  transition:border-color 0.12s;
+  box-shadow:var(--shadow-sm),var(--shadow-card);
+}
+.loan-card:hover{border-color:var(--border-strong);}
+.loan-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.loan-client{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--white);letter-spacing:-0.02em;}
+.loan-amount{font-size:22px;font-weight:700;color:var(--white);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.04em;line-height:1.05;}
+.loan-progress-wrap{margin:10px 0 6px;}
+.loan-progress{height:3px;background:var(--ink4);border-radius:2px;overflow:hidden;}
+.loan-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:2px;}
+.loan-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:8px;font-family:'JetBrains Mono',monospace;}
+.loans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+
+/* CONTAINER DETAIL */
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.detail-item{background:var(--ink3);border-radius:var(--radius);padding:12px 14px;}
+.detail-label{font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:4px;line-height:1.6;}
+.detail-val{font-size:14px;font-weight:700;color:var(--white);letter-spacing:-0.01em;}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab{
+  padding:9px 18px;font-size:12px;font-weight:400;
+  color:var(--text-muted);cursor:pointer;
+  border-bottom:1px solid transparent;
+  margin-bottom:-1px;
+  letter-spacing:-0.005em;transition:color 0.1s;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.tab:hover{color:var(--text-secondary);}
+.tab.active{color:var(--white);border-bottom-color:var(--gold);font-weight:500;}
+
+/* ALERT BANNER */
+.alert-banner{
+  background:transparent;
+  border:none;
+  border-left:2px solid rgba(232,64,64,0.45);
+  border-radius:0;
+  padding:7px 14px;
+  font-size:12px;color:var(--text-secondary);
+  font-weight:400;
+  display:flex;align-items:center;gap:10px;
+  line-height:1.5;
+}
+.warn-banner{
+  background:transparent;
+  border:none;
+  border-left:2px solid rgba(240,133,53,0.45);
+  border-radius:0;
+  padding:7px 14px;
+  font-size:12px;color:var(--text-secondary);
+  font-weight:400;
+  display:flex;align-items:center;gap:10px;
+  line-height:1.5;
+}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:12px;padding:10px 0;}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:3px;position:relative;}
+.tl-dot::after{content:'';position:absolute;top:10px;left:4px;width:2px;height:calc(100% + 10px);background:var(--border);}
+.tl-item:last-child .tl-dot::after{display:none;}
+.tl-dot.done{background:var(--green);}
+.tl-dot.active{background:var(--gold);}
+.tl-content{flex:1;}
+.tl-title{font-size:12px;font-weight:700;color:var(--white);}
+.tl-date{font-size:11px;color:var(--muted);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.12);}
+
+/* SECTION LABEL — used on dashboard to separate transport / lending */
+.section-eyebrow{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text-secondary);
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border2);
+  margin-bottom:2px;
+}
+
+/* ── HAMBURGER ── */
+.ham-btn{display:none;flex-direction:column;justify-content:center;align-items:center;width:36px;height:36px;gap:5px;cursor:pointer;background:transparent;border:none;padding:4px;flex-shrink:0;}
+.ham-btn span{display:block;width:20px;height:2px;background:var(--white);border-radius:2px;transition:all 0.2s;}
+
+/* ── MOBILE OVERLAY ── */
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;backdrop-filter:blur(2px);}
+.mob-overlay.open{display:block;}
+
+/* ── SIDEBAR DRAWER ── */
+.sidebar.mob-open{display:flex !important;position:fixed;top:0;left:0;bottom:0;width:260px;z-index:300;box-shadow:8px 0 32px rgba(0,0,0,0.6);animation:slideIn 0.22s ease;}
+@keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+
+/* ── BOTTOM NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--ink2);border-top:1px solid var(--border);z-index:150;padding:6px 0 env(safe-area-inset-bottom,6px);}
+.mob-nav-inner{display:flex;justify-content:space-around;align-items:center;}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;cursor:pointer;border-radius:8px;transition:background 0.12s;min-width:52px;}
+.mob-nav-item:active{background:rgba(255,255,255,0.06);}
+.mob-nav-item.active .mob-nav-ico,.mob-nav-item.active .mob-nav-lbl{color:var(--gold-text);}
+.mob-nav-ico{font-size:18px;line-height:1;}
+.mob-nav-lbl{font-size:9px;color:var(--text-muted);letter-spacing:0.03em;font-weight:500;}
+
+/* ── MORE DRAWER ── */
+.mob-more-drawer{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--ink2);border-top:1px solid var(--border);z-index:400;border-radius:16px 16px 0 0;padding:12px 0 env(safe-area-inset-bottom,16px);animation:slideUp 0.2s ease;}
+.mob-more-drawer.open{display:block;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mob-drawer-handle{width:36px;height:4px;background:var(--border-strong);border-radius:2px;margin:0 auto 12px;}
+.mob-drawer-item{display:flex;align-items:center;gap:14px;padding:13px 24px;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:background 0.1s;}
+.mob-drawer-item:active{background:rgba(255,255,255,0.04);}
+.mob-drawer-item.active{color:var(--gold-text);}
+.mob-drawer-ico{font-size:16px;width:20px;text-align:center;}
+.mob-drawer-section{font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);padding:8px 24px 4px;font-family:'JetBrains Mono',monospace;}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr;grid-template-rows:58px 1fr;}
+  .sidebar{display:none;}
+  .main{padding-bottom:70px;}
+  .ham-btn{display:flex;}
+  .tb-divider,.tb-badge,.tb-user-info{display:none;}
+  .tb-user-avatar{width:32px;height:32px;}
+  .mob-nav{display:block;}
+  .view{padding:16px 14px 24px !important;}
+  .tbl-wrap{overflow-x:auto;}
+  .stat-grid-5{grid-template-columns:repeat(2,1fr) !important;}
+  .stat-grid-4{grid-template-columns:repeat(2,1fr) !important;}
+  .stat-grid-3{grid-template-columns:repeat(2,1fr) !important;}
+  .loans-grid{grid-template-columns:1fr !important;}
+  #v-dashboard > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
+}
+@media(max-width:480px){
+  .stat-grid-5,.stat-grid-4{grid-template-columns:1fr 1fr !important;}
+  .page-title{font-size:17px !important;}
+  .page-actions .btn-ghost:not(:last-child){display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="ham-btn" onclick="toggleMobSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="tb-logo">GGS<span> Logistics</span></div>
+  <div class="tb-divider"></div>
+  <div class="tb-title" id="tb-title">Dashboard</div>
+  <div class="tb-space"></div>
+  <div class="tb-badge">DEMO v1.0</div>
+  <div style="width:12px"></div>
+  <div class="tb-user">
+    <div class="tb-user-avatar">A</div>
+    <div class="tb-user-info">
+      <div class="tb-user-name">Admin</div>
+      <div class="tb-user-role">GGS Operations</div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<div class="mob-overlay" id="mob-overlay" onclick="closeMobSidebar()"></div>
+
+<!-- BOTTOM NAV BAR -->
+<div class="mob-nav">
+  <div class="mob-nav-inner">
+    <div class="mob-nav-item active" id="mn-dashboard" onclick="mobNav('dashboard','Dashboard',this)">
+      <div class="mob-nav-ico">📊</div>
+      <div class="mob-nav-lbl">Dashboard</div>
+    </div>
+    <div class="mob-nav-item" id="mn-containers" onclick="mobNav('containers','Container Jobs',this)">
+      <div class="mob-nav-ico">📦</div>
+      <div class="mob-nav-lbl">Containers</div>
+    </div>
+    <div class="mob-nav-item" id="mn-loans" onclick="mobNav('loans','Active Loans',this)">
+      <div class="mob-nav-ico">💰</div>
+      <div class="mob-nav-lbl">Loans</div>
+    </div>
+    <div class="mob-nav-item" id="mn-payments" onclick="mobNav('payments','Client Payments',this)">
+      <div class="mob-nav-ico">💳</div>
+      <div class="mob-nav-lbl">Payments</div>
+    </div>
+    <div class="mob-nav-item" id="mn-more" onclick="toggleMoreDrawer()">
+      <div class="mob-nav-ico">☰</div>
+      <div class="mob-nav-lbl">More</div>
+    </div>
+  </div>
+</div>
+
+<!-- MORE DRAWER -->
+<div class="mob-more-drawer" id="mob-more-drawer">
+  <div class="mob-drawer-handle"></div>
+  <div class="mob-drawer-section">Container Transport</div>
+  <div class="mob-drawer-item" onclick="mobNavMore('suppliers','Supplier Payments')">
+    <span class="mob-drawer-ico">🏭</span> Supplier Payments
+  </div>
+  <div class="mob-drawer-item" onclick="mobNavMore('expenses','Company Expenses')">
+    <span class="mob-drawer-ico">🧾</span> Company Expenses
+  </div>
+  <div class="mob-drawer-section">Money Lending</div>
+  <div class="mob-drawer-item" onclick="mobNavMore('loan-repayments','Loan Repayments')">
+    <span class="mob-drawer-ico">↩️</span> Repayments
+  </div>
+  <div class="mob-drawer-section">Reports</div>
+  <div class="mob-drawer-item" onclick="mobNavMore('reports','Monthly Reports')">
+    <span class="mob-drawer-ico">📈</span> Monthly Reports
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Overview</div>
+    <div class="sb-item active" onclick="nav('dashboard',this,'Dashboard')">
+      <span class="sb-ico">📊</span> Dashboard
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Container Transport</div>
+    <div class="sb-item" onclick="nav('containers',this,'Container Jobs')">
+      <span class="sb-ico">📦</span> Container Jobs
+    </div>
+    <div class="sb-item" onclick="nav('payments',this,'Client Payments')">
+      <span class="sb-ico">💳</span> Client Payments
+    </div>
+    <div class="sb-item" onclick="nav('suppliers',this,'Supplier Payments')">
+      <span class="sb-ico">🏭</span> Supplier Payments
+    </div>
+    <div class="sb-item" onclick="nav('expenses',this,'Company Expenses')">
+      <span class="sb-ico">🧾</span> Company Expenses
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Money Lending</div>
+    <div class="sb-item" onclick="nav('loans',this,'Active Loans')">
+      <span class="sb-ico">💰</span> Active Loans
+    </div>
+    <div class="sb-item" onclick="nav('loan-repayments',this,'Loan Repayments')">
+      <span class="sb-ico">↩️</span> Repayments
+    </div>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Reports</div>
+    <div class="sb-item" onclick="nav('reports',this,'Monthly Reports')">
+      <span class="sb-ico">📈</span> Monthly Reports
+    </div>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-stat">
+      <div class="sb-stat-label">Net Revenue</div>
+      <div class="sb-stat-val" id="sb-rev">—</div>
+      <div class="sb-stat-sub">This month</div>
+    </div>
+    <div class="sb-stat">
+      <div class="sb-stat-label">Active Containers</div>
+      <div class="sb-stat-val" style="color:var(--blue)" id="sb-active">—</div>
+    </div>
+    <div class="sb-stat">
+      <div class="sb-stat-label">Outstanding Loans</div>
+      <div class="sb-stat-val" style="color:var(--orange)" id="sb-loans">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div class="view active" id="v-dashboard">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Operations Dashboard</div>
+      <div class="page-sub">March 2026 · All business units</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="nav('reports',document.querySelector('[onclick*=reports]'),'Monthly Reports')">📄 Export Report</button>
+    </div>
+  </div>
+
+  <!-- Transport Stats -->
+  <div class="section-eyebrow">Container Transport</div>
+
+  <div class="alert-banner" style="display:none">⚠️ 2 containers overdue — <a onclick="openContainerModal(1)" style="color:var(--red);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">Nakato Traders (MSCU3421870)</a> &nbsp;·&nbsp; <a onclick="openContainerModal(2)" style="color:var(--red);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">Ssemakula Foods (CMAU9087654)</a></div>
+
+  <div class="stat-grid stat-grid-5">
+    <div class="sc gold">
+      <div class="sc-label">Revenue (Month)</div>
+      <div class="sc-val">—</div>
+      <div class="sc-sub" id="d-rev-sub">Loading...</div>
+    </div>
+    <div class="sc blue">
+      <div class="sc-label">Active Jobs</div>
+      <div class="sc-val" id="d-active">—</div>
+      <div class="sc-sub">In progress</div>
+    </div>
+    <div class="sc green">
+      <div class="sc-label">Delivered</div>
+      <div class="sc-val" id="d-delivered">—</div>
+      <div class="sc-sub">This month</div>
+    </div>
+    <div class="sc orange">
+      <div class="sc-label">Arrears</div>
+      <div class="sc-val" id="d-arrears">—</div>
+      <div class="sc-sub">UGX outstanding</div>
+    </div>
+    <div class="sc red">
+      <div class="sc-label">Overdue</div>
+      <div class="sc-val" id="d-overdue">—</div>
+      <div class="sc-sub">Past delivery date</div>
+    </div>
+  </div>
+
+  <!-- Lending Stats -->
+  <div class="section-eyebrow">Money Lending</div>
+  <div class="stat-grid stat-grid-4">
+    <div class="sc purple">
+      <div class="sc-label">Active Loans</div>
+      <div class="sc-val" id="d-loans">—</div>
+      <div class="sc-sub">This month</div>
+    </div>
+    <div class="sc gold">
+      <div class="sc-label">Total Lent Out</div>
+      <div class="sc-val" id="d-lent">—</div>
+      <div class="sc-sub">UGX principal</div>
+    </div>
+    <div class="sc green">
+      <div class="sc-label">Interest Earned</div>
+      <div class="sc-val" id="d-interest">—</div>
+      <div class="sc-sub">UGX this month</div>
+    </div>
+    <div class="sc red">
+      <div class="sc-label">Due Today</div>
+      <div class="sc-val" id="d-due">—</div>
+      <div class="sc-sub">Repayments expected</div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div class="chart-wrap">
+      <div class="chart-title">Monthly Container Revenue (UGX Millions)</div>
+      <div class="bar-chart" id="rev-chart"></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Containers Worked — by Month</div>
+      <div class="bar-chart" id="cnt-chart"></div>
+    </div>
+  </div>
+
+  <!-- Recent Containers -->
+  <div class="tbl-wrap">
+    <div class="tbl-hd">
+      <div class="tbl-hd-title">Recent Container Jobs</div>
+      <button class="btn btn-primary btn-sm" onclick="nav('containers',document.querySelector('[onclick*=containers]'),'Container Jobs')">View All</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Container No.</th><th>Client</th><th>BL No.</th><th>Size</th><th>Shipping Line</th><th>ETA</th><th>Status</th><th>Invoice</th>
+      </tr></thead>
+      <tbody id="dash-containers"></tbody>
+    </table>
+  </div>
+
+  <!-- Due today loans -->
+  <div class="tbl-wrap">
+    <div class="tbl-hd">
+      <div class="tbl-hd-title">Loan Repayments Due Today / This Week</div>
+    </div>
+    <table>
+      <thead><tr><th>Client</th><th>Principal</th><th>Interest Rate</th><th>Amount Due</th><th>Due Date</th><th>Status</th></tr></thead>
+      <tbody id="dash-loans"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ CONTAINERS ══════════════ -->
+<div class="view" id="v-containers">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Container Jobs</div>
+      <div class="page-sub">All container transportation orders</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Generate Report</button>
+      <button class="btn btn-ghost btn-sm">🔍 Filter</button>
+      <button class="btn btn-primary btn-sm" onclick="openContainerModal()">+ New Container Job</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="filterContainers('all',this)">All Jobs</div>
+    <div class="tab" onclick="filterContainers('InProgress',this)">In Progress</div>
+    <div class="tab" onclick="filterContainers('Pending',this)">Pending</div>
+    <div class="tab" onclick="filterContainers('Delivered',this)">Delivered</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-hd">
+      <div class="tbl-hd-title">Container Jobs</div>
+      <input class="tbl-search" placeholder="Search client, container, BL..." oninput="searchContainers(this.value)">
+    </div>
+    <table>
+      <thead><tr>
+        <th>Date Received</th><th>Client</th><th>Container No.</th><th>Size</th>
+        <th>Shipping Line</th><th>ETA</th><th>Invoice No.</th><th>Invoice Amt</th>
+        <th>Costs</th><th>Est. Profit</th><th>Status</th><th>Payment</th><th></th>
+      </tr></thead>
+      <tbody id="containers-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ CLIENT PAYMENTS ══════════════ -->
+<div class="view" id="v-payments">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Client Payments</div>
+      <div class="page-sub">Track invoice payments and arrears</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Generate Report</button>
+      <button class="btn btn-primary btn-sm" onclick="openPaymentModal()">+ Record Payment</button>
+    </div>
+  </div>
+
+  <div class="stat-grid stat-grid-4" style="margin-bottom:4px;">
+    <div class="sc green"><div class="sc-label">Total Collected</div><div class="sc-val" id="pay-collected">—</div><div class="sc-sub">UGX this month</div></div>
+    <div class="sc orange"><div class="sc-label">Outstanding</div><div class="sc-val" id="pay-outstanding">—</div><div class="sc-sub">UGX arrears</div></div>
+    <div class="sc red"><div class="sc-label">Overdue</div><div class="sc-val" id="pay-overdue">—</div><div class="sc-sub">Clients</div></div>
+    <div class="sc gold"><div class="sc-label">Fully Paid</div><div class="sc-val" id="pay-paid">—</div><div class="sc-sub">Contracts</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-hd"><div class="tbl-hd-title">Payment Records</div></div>
+    <table>
+      <thead><tr>
+        <th>Client</th><th>Invoice No.</th><th>Invoice Amt</th><th>Paid So Far</th>
+        <th>Balance</th><th>Last Payment</th><th>Status</th><th></th>
+      </tr></thead>
+      <tbody id="payments-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ SUPPLIERS ══════════════ -->
+<div class="view" id="v-suppliers">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Mombasa Supplier Payments</div>
+      <div class="page-sub">Loader/supplier payment tracking and arrears</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Generate Report</button>
+      <button class="btn btn-primary btn-sm" onclick="openSupplierModal()">+ Add Supplier Payment</button>
+    </div>
+  </div>
+
+  <div class="stat-grid stat-grid-3" style="margin-bottom:4px;">
+    <div class="sc orange"><div class="sc-label">Total Owed</div><div class="sc-val" id="sup-total">—</div><div class="sc-sub">UGX to suppliers</div></div>
+    <div class="sc green"><div class="sc-label">Paid This Month</div><div class="sc-val" id="sup-paid">—</div><div class="sc-sub">UGX</div></div>
+    <div class="sc red"><div class="sc-label">Supplier Arrears</div><div class="sc-val" id="sup-arrears">—</div><div class="sc-sub">UGX outstanding</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-hd"><div class="tbl-hd-title">Supplier Payment Records</div></div>
+    <table>
+      <thead><tr>
+        <th>Supplier</th><th>For Container</th><th>Service</th><th>Total Owed</th>
+        <th>Amount Paid</th><th>Arrears</th><th>Date Paid</th><th>Status</th><th></th>
+      </tr></thead>
+      <tbody id="suppliers-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ EXPENSES ══════════════ -->
+<div class="view" id="v-expenses">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Company Expenses</div>
+      <div class="page-sub">All operational costs</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Generate Report</button>
+      <button class="btn btn-primary btn-sm" onclick="openExpenseModal()">+ Add Expense</button>
+    </div>
+  </div>
+
+  <div class="stat-grid stat-grid-3" style="margin-bottom:4px;">
+    <div class="sc red"><div class="sc-label">Total Expenses</div><div class="sc-val" id="exp-total">—</div><div class="sc-sub">UGX this month</div></div>
+    <div class="sc orange"><div class="sc-label">This Week</div><div class="sc-val" id="exp-week">—</div><div class="sc-sub">UGX</div></div>
+    <div class="sc gold"><div class="sc-label">Top Category</div><div class="sc-val" id="exp-topcat" style="font-size:16px;">—</div><div class="sc-sub">3.2M UGX</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-hd"><div class="tbl-hd-title">Expense Records</div></div>
+    <table>
+      <thead><tr>
+        <th>Date</th><th>Description</th><th>Category</th><th>Amount (UGX)</th><th>Paid Via</th><th>Related Container</th><th>Notes</th><th></th>
+      </tr></thead>
+      <tbody id="expenses-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ LOANS ══════════════ -->
+<div class="view" id="v-loans">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Money Lending</div>
+      <div class="page-sub">Client loans & post-delivery government fee financing</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Generate Report</button>
+      <button class="btn btn-primary btn-sm" onclick="openLoanModal()">+ New Loan</button>
+    </div>
+  </div>
+
+  <div class="stat-grid stat-grid-4" style="margin-bottom:4px;">
+    <div class="sc purple"><div class="sc-label">Active Loans</div><div class="sc-val" id="ln-active">—</div><div class="sc-sub">This month</div></div>
+    <div class="sc gold"><div class="sc-label">Total Lent</div><div class="sc-val" id="d-lent">—</div><div class="sc-sub">UGX principal</div></div>
+    <div class="sc green"><div class="sc-label">Interest Earned</div><div class="sc-val" id="d-interest">—</div><div class="sc-sub">UGX</div></div>
+    <div class="sc red"><div class="sc-label">Due Today</div><div class="sc-val" id="ln-due">—</div><div class="sc-sub">Repayments</div></div>
+  </div>
+
+  <div class="loans-grid" id="loans-grid"></div>
+</div>
+
+<!-- ══════════════ LOAN REPAYMENTS ══════════════ -->
+<div class="view" id="v-loan-repayments">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Loan Repayments</div>
+      <div class="page-sub">Record and track repayments</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Generate Report</button>
+      <button class="btn btn-primary btn-sm" onclick="openRepayModal()">+ Record Repayment</button>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-hd"><div class="tbl-hd-title">Repayment History</div></div>
+    <table>
+      <thead><tr>
+        <th>Date</th><th>Client</th><th>Loan Principal</th><th>Amount Paid</th>
+        <th>Type</th><th>Balance Remaining</th><th>Notes</th>
+      </tr></thead>
+      <tbody id="repayments-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ REPORTS ══════════════ -->
+<div class="view" id="v-reports">
+  <div class="page-hd">
+    <div class="page-hd-left">
+      <div class="page-title">Monthly Reports</div>
+      <div class="page-sub">Generate and download operational reports</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-ghost btn-sm" onclick="alert('PDF export will be available in the full build')">📄 Export PDF</button>
+      <button class="btn btn-primary btn-sm" onclick="alert('Excel export will be available in the full build')">📊 Export Excel</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="chart-wrap">
+      <div class="chart-title">Revenue vs Expenses — 2026</div>
+      <div style="display:flex;gap:4px;align-items:flex-end;height:100px;" id="rev-exp-chart"></div>
+    </div>
+    <div class="sc" style="background:var(--ink2);">
+      <div class="sc-label" style="margin-bottom:12px;">March 2026 Summary</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted)">Containers Handled</span><span style="font-weight:700;color:var(--white)" id="rpt-jobs">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted)">Gross Revenue</span><span style="font-weight:700;color:var(--gold)" id="rpt-rev">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted)">Total Costs</span><span style="font-weight:700;color:var(--red)" id="rpt-costs">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;border-top:1px solid var(--border);padding-top:8px;"><span style="color:var(--muted)">Net Profit</span><span style="font-weight:800;color:var(--green);font-size:16px;" id="rpt-profit">—</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted)">Loan Interest Earned</span><span style="font-weight:700;color:var(--purple)" id="rpt-interest">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-hd">
+      <div class="tbl-hd-title">Containers Worked — March 2026</div>
+      <div style="display:flex;gap:8px;">
+        <select style="background:var(--ink3);border:1px solid var(--border);color:var(--white);padding:5px 10px;border-radius:var(--radius);font-size:12px;">
+          <option>March 2026</option><option>February 2026</option><option>January 2026</option>
+        </select>
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Container No.</th><th>Client</th><th>Items</th><th>Invoice Amt</th>
+        <th>Total Costs</th><th>Profit</th><th>Status</th><th>Invoice Date</th>
+      </tr></thead>
+      <tbody id="report-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══════════════ CONTAINER MODAL ══════════════ -->
+<div class="overlay" id="container-overlay">
+  <div class="modal modal-lg">
+    <div class="modal-hd">
+      <div class="modal-title" id="container-modal-title">New Container Job</div>
+      <button class="modal-x" onclick="closeModal('container-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">Client & Container Information</div>
+      <div class="form-row">
+        <div class="fg"><label>Date Received</label><input type="date" id="c-date-recv"></div>
+        <div class="fg"><label>Client Name *</label><input id="c-client" placeholder="e.g. Nakato Traders Ltd"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>BL Number</label><input id="c-bl" placeholder="e.g. MSCU-2024-00321"></div>
+        <div class="fg"><label>Container Number</label><input id="c-container-no" placeholder="e.g. MSCU3421870"></div>
+      </div>
+      <div class="form-row-3">
+        <div class="fg"><label>Container Size</label>
+          <select id="c-size">
+            <option>20ft</option><option>40ft</option><option>40ft HC</option><option>45ft</option>
+          </select>
+        </div>
+        <div class="fg"><label>Weight (KG)</label><input type="number" id="c-weight" placeholder="e.g. 18000"></div>
+        <div class="fg"><label>Shipping Line</label>
+          <select id="c-shipping-line">
+            <option>MSC</option><option>Maersk</option><option>CMA CGM</option>
+            <option>Evergreen</option><option>COSCO</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Items Description</label><input id="c-items" placeholder="e.g. Assorted foodstuffs, electronics"></div>
+      <div class="form-row">
+        <div class="fg"><label>Expected Time of Arrival (ETA)</label><input type="date" id="c-eta"></div>
+        <div class="fg"><label>Status</label>
+          <select id="c-status">
+            <option>Pending</option><option>InProgress</option><option>Delivered</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-top:6px;">Invoice & Financials</div>
+      <div class="form-row">
+        <div class="fg"><label>Invoice Number</label><input id="c-invoice-no" placeholder="e.g. GGS-INV-2026-041"></div>
+        <div class="fg"><label>Date of Invoicing</label><input type="date" id="c-date-invoice"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Invoice Amount (UGX)</label><input type="number" id="c-invoice-amt" placeholder="e.g. 8500000" oninput="calcProfit()"></div>
+        <div class="fg"><label>Est. Profit (auto)</label><input id="c-profit" readonly style="color:var(--green);font-weight:700;" placeholder="Calculated from costs"></div>
+      </div>
+
+      <div class="form-section" style="margin-top:6px;">Costs Breakdown</div>
+      <div class="cost-list" id="costs-list">
+        <div class="cost-item cost-hd">
+          <span>Description</span><span>Amount (UGX)</span><span>Date</span><span></span>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="addCostRow()" style="margin-top:6px;">+ Add Cost Item</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:4px;">
+        <span style="color:var(--muted)">Total Costs:</span>
+        <span style="font-weight:700;color:var(--red)" id="total-costs-display">UGX 0</span>
+      </div>
+
+      <div class="form-section" style="margin-top:6px;">Documents & Notes</div>
+      <div class="fg"><label>Attach PDF Document</label><input type="file" accept=".pdf" id="c-doc" style="padding:7px;font-size:12px;"></div>
+      <div class="fg"><label>Notes</label><textarea id="c-notes" placeholder="Any additional notes..."></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-danger btn-sm" id="c-del-btn" style="display:none;margin-right:auto;" onclick="deleteContainer()">Delete</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('container-overlay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveContainer()">Save Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="payment-overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Record Client Payment</div>
+      <button class="modal-x" onclick="closeModal('payment-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="fg"><label>Client Name *</label><input id="pay-client" placeholder="Client name"></div>
+        <div class="fg"><label>Invoice Number</label><input id="pay-invoice" placeholder="e.g. GGS-INV-2026-041"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Invoice Amount (UGX)</label><input type="number" id="pay-total" placeholder="Total invoice"></div>
+        <div class="fg"><label>Amount Paid (UGX)</label><input type="number" id="pay-paid-amt" placeholder="Amount received"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Payment Date</label><input type="date" id="pay-date"></div>
+        <div class="fg"><label>Payment Method</label>
+          <select id="pay-method">
+            <option>Bank Transfer</option><option>MTN Mobile Money</option>
+            <option>Airtel Money</option><option>Cash</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Notes</label><textarea id="pay-notes" placeholder="Payment notes..."></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('payment-overlay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="savePayment()">Save Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPLIER MODAL -->
+<div class="overlay" id="supplier-overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Supplier Payment</div>
+      <button class="modal-x" onclick="closeModal('supplier-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="fg"><label>Supplier Name *</label><input id="sup-name" placeholder="e.g. Mombasa Loaders Ltd"></div>
+        <div class="fg"><label>Related Container</label><input id="sup-container" placeholder="Container number"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Service Provided</label><input id="sup-service" placeholder="e.g. Loading, Customs clearance"></div>
+        <div class="fg"><label>Total Amount Owed (UGX)</label><input type="number" id="sup-total"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Amount Paid (UGX)</label><input type="number" id="sup-paid"></div>
+        <div class="fg"><label>Date Paid</label><input type="date" id="sup-date"></div>
+      </div>
+      <div class="fg"><label>Notes / What Exactly Being Paid For</label><textarea id="sup-notes" placeholder="Describe the payment purpose..."></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('supplier-overlay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSupplier()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="overlay" id="expense-overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Add Expense</div>
+      <button class="modal-x" onclick="closeModal('expense-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="fg"><label>Date *</label><input type="date" id="ex-date"></div>
+        <div class="fg"><label>Category *</label>
+          <select id="ex-cat">
+            <option value="">Select...</option>
+            <option>Transport & Fuel</option><option>Port Charges</option>
+            <option>Customs & Duties</option><option>Staff & Labour</option>
+            <option>Office & Supplies</option><option>Communication</option>
+            <option>Bank Charges</option><option>Miscellaneous</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Description *</label><input id="ex-desc" placeholder="e.g. Fuel for truck delivery"></div>
+      <div class="form-row">
+        <div class="fg"><label>Amount (UGX) *</label><input type="number" id="ex-amount"></div>
+        <div class="fg"><label>Paid Via</label>
+          <select id="ex-method">
+            <option>Bank Transfer</option><option>Cash</option>
+            <option>MTN Mobile Money</option><option>Airtel Money</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Related Container (Optional)</label><input id="ex-container" placeholder="Container number if applicable"></div>
+      <div class="fg"><label>Notes</label><textarea id="ex-notes"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('expense-overlay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveExpense()">Save Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN MODAL -->
+<div class="overlay" id="loan-overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">New Loan</div>
+      <button class="modal-x" onclick="closeModal('loan-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label>Client Name *</label><input id="ln-client" placeholder="e.g. Nakato Traders Ltd"></div>
+      <div class="form-row">
+        <div class="fg"><label>Amount Lent (UGX) *</label><input type="number" id="ln-amount" placeholder="e.g. 5000000"></div>
+        <div class="fg"><label>Interest Rate (%)</label><input type="number" id="ln-rate" placeholder="e.g. 10" step="0.5"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Date Issued</label><input type="date" id="ln-date"></div>
+        <div class="fg"><label>Payment Period</label>
+          <select id="ln-period">
+            <option>30 days</option><option>60 days</option><option>90 days</option>
+            <option>Custom</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Related Container (optional)</label><input id="ln-container" placeholder="Container this loan relates to"></div>
+      <div class="fg"><label>Purpose / Notes</label><textarea id="ln-notes" placeholder="e.g. URA tax clearance for container MSCU3421870"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('loan-overlay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveLoan()">Issue Loan</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPAYMENT MODAL -->
+<div class="overlay" id="repay-overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Record Repayment</div>
+      <button class="modal-x" onclick="closeModal('repay-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label>Client</label>
+        <select id="rp-client"><option>Select client...</option></select>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Amount Paid (UGX)</label><input type="number" id="rp-amount"></div>
+        <div class="fg"><label>Date</label><input type="date" id="rp-date"></div>
+      </div>
+      <div class="fg"><label>Type</label>
+        <select id="rp-type">
+          <option>Principal</option><option>Interest</option><option>Both</option>
+        </select>
+      </div>
+      <div class="fg"><label>Notes</label><textarea id="rp-notes"></textarea></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('repay-overlay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveRepayment()">Save Repayment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// GGS Logistics — Frontend API Integration
+// Replaces all localStorage/demo data with real backend calls
+// ============================================================
+
+const API = '/.netlify/functions';
+
+// ── STATE ────────────────────────────────────────────────────
+let containers     = [];
+let clientPayments = [];
+let suppliers      = [];
+let expenses       = [];
+let loans          = [];
+let repayments     = [];
+let dashSummary    = null;
+
+// ── LOADING / TOAST ──────────────────────────────────────────
+function showLoader(on) {
+  let el = document.getElementById('_loader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = '_loader';
+    el.style.cssText = `position:fixed;top:0;left:0;right:0;height:2px;
+      background:var(--gold-text);z-index:9999;transition:opacity 0.3s;`;
+    document.body.appendChild(el);
+  }
+  el.style.opacity = on ? '1' : '0';
+}
+
+function toast(msg, type = 'ok') {
+  let el = document.getElementById('_toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = '_toast';
+    el.style.cssText = `position:fixed;bottom:24px;right:24px;padding:11px 18px;
+      font-size:12.5px;font-weight:600;border-radius:6px;z-index:9999;
+      transition:opacity 0.35s;opacity:0;max-width:360px;
+      font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,0.5);`;
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.background = type === 'err' ? 'var(--red)' : 'var(--green)';
+  el.style.color = '#fff';
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.style.opacity = '0', 3200);
+}
+
+// ── API HELPERS ──────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+const apiGet  = (p)    => apiFetch(p);
+const apiPost = (p, b) => apiFetch(p, { method: 'POST',   body: JSON.stringify(b) });
+const apiPut  = (p, b) => apiFetch(p, { method: 'PUT',    body: JSON.stringify(b) });
+const apiDel  = (p)    => apiFetch(p, { method: 'DELETE' });
+
+// ── INITIAL LOAD ─────────────────────────────────────────────
+async function loadAll() {
+  showLoader(true);
+  try {
+    const [c, p, s, e, l, r, d] = await Promise.all([
+      apiGet('/transport-jobs'),
+      apiGet('/transport-payments'),
+      apiGet('/supplier-payments'),
+      apiGet('/expenses'),
+      apiGet('/loans'),
+      apiGet('/loan-repayments'),
+      apiGet('/dashboard-summary'),
+    ]);
+    containers     = c;
+    clientPayments = p;
+    suppliers      = s;
+    expenses       = e;
+    loans          = l;
+    repayments     = r;
+    dashSummary    = d;
+    renderAll();
+  } catch (err) {
+    toast('⚠️ Could not connect to database. Check Netlify env vars.', 'err');
+    console.error(err);
+  } finally {
+    showLoader(false);
+  }
+}
+
+// ── FORMATTERS ───────────────────────────────────────────────
+function fmt(v)  { return Number(v||0).toLocaleString('en-UG'); }
+function fmtM(v) {
+  v = Number(v||0);
+  if (v >= 1_000_000) return (v/1_000_000).toFixed(1) + 'M';
+  if (v >= 1_000)     return Math.round(v/1_000) + 'K';
+  return String(v);
+}
+function d(v) { return v ? String(v).slice(0, 10) : '—'; }
+function payBadge(s) {
+  const m = { Paid:'b-paid', Partial:'b-partial', Unpaid:'b-unpaid' };
+  return `<span class="badge ${m[s]||'b-unpaid'}">${s}</span>`;
+}
+function statusBadge(s) {
+  const m = { Pending:'b-pending', InProgress:'b-inprogress', Delivered:'b-delivered' };
+  return `<span class="badge ${m[s]||'b-pending'}">${s}</span>`;
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────
+function renderAll() {
+  renderDashboard();
+  renderContainers();
+  renderPayments();
+  renderSuppliers();
+  renderExpenses();
+  renderLoans();
+  renderRepayments();
+  renderReports();
+  renderCharts();
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function renderDashboard() {
+  const ds = dashSummary?.transport;
+  const dl = dashSummary?.lending;
+  if (!ds) return;
+
+  // Sidebar quick stats
+  document.getElementById('sb-rev').textContent    = 'UGX ' + fmtM(ds.month_revenue);
+  document.getElementById('sb-active').textContent = ds.active;
+  document.getElementById('sb-loans').textContent  = 'UGX ' + fmtM(dl?.principal_outstanding || 0);
+
+  // Transport KPI cards — use direct IDs, no flash of old data
+  const _s = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  _s('d-rev',       fmtM(ds.month_revenue));
+  _s('d-active',    ds.active);
+  _s('d-delivered', ds.delivered);
+  _s('d-arrears',   fmtM(ds.outstanding));
+  _s('d-overdue',   dashSummary.overdue_jobs?.length || 0);
+  _s('d-rev-sub',   'UGX · ' + ds.total_jobs + ' containers');
+
+  // Lending KPI cards
+  if (dl) {
+    _s('d-loans',    dl.active_loans);
+    _s('d-lent',     fmtM(dl.total_lent));
+    _s('d-interest', fmtM(dl.interest_collected));
+    _s('d-due',      dl.due_today_count);
+  }
+
+  // Loans page cards
+  _s('ln-active', dl?.active_loans || 0);
+  _s('ln-due',    dl?.due_today_count || 0);
+
+  // Reports summary
+  _s('rpt-jobs',     ds.total_jobs);
+  _s('rpt-rev',      'UGX ' + fmt(ds.gross_revenue));
+  _s('rpt-costs',    'UGX ' + fmt(ds.total_costs + ds.total_expenses));
+  _s('rpt-profit',   'UGX ' + fmt(ds.net_profit));
+  _s('rpt-interest', 'UGX ' + fmt(dl?.interest_collected || 0));
+
+  // Overdue alert
+  const alertEl = document.querySelector('.alert-banner');
+  if (alertEl && dashSummary.overdue_jobs?.length) {
+    const links = dashSummary.overdue_jobs.map(j =>
+      `<a onclick="openContainerModal(${j.id})" style="color:var(--red);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">${j.client_name} (${j.container_no||'—'})</a>`
+    ).join(' &nbsp;·&nbsp; ');
+    alertEl.innerHTML = `⚠️ ${dashSummary.overdue_jobs.length} container(s) overdue — ${links}`;
+    alertEl.style.display = '';
+  } else if (alertEl) {
+    alertEl.style.display = 'none';
+  }
+
+  // Dashboard tables
+  document.getElementById('dash-containers').innerHTML =
+    containers.slice(0, 5).map(c => `<tr onclick="openContainerModal(${c.id})">
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">${c.container_no||'—'}</td>
+      <td style="font-weight:700;color:var(--white)">${c.client_name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">${c.bl_number||'—'}</td>
+      <td>${c.container_size||'—'}</td>
+      <td style="color:var(--text-secondary)">${c.shipping_line||'—'}</td>
+      <td style="color:var(--text-secondary)">${d(c.eta)}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td style="color:var(--gold-text);font-weight:700">UGX ${fmtM(c.invoice_amount)}</td>
+    </tr>`).join('') ||
+    '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted)">No container jobs yet.</td></tr>';
+
+  document.getElementById('dash-loans').innerHTML =
+    (dashSummary.lending?.due_today || []).map(l => {
+      const bal = Number(l.total_due) - Number(l.total_paid);
+      return `<tr>
+        <td style="font-weight:700;color:var(--white)">${l.client_name}</td>
+        <td>UGX ${fmtM(l.amount)}</td>
+        <td style="color:var(--purple)">${l.interest_rate}%</td>
+        <td style="color:var(--orange);font-weight:700">UGX ${fmtM(bal > 0 ? bal : 0)}</td>
+        <td style="color:var(--text-secondary)">Overdue</td>
+        <td><span class="badge b-overdue">OVERDUE</span></td>
+      </tr>`;
+    }).join('') ||
+    '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">No loans overdue today.</td></tr>';
+}
+
+// ── CONTAINERS ────────────────────────────────────────────────
+let _cFilter = 'all';
+let _cSearch = '';
+
+function filterContainers(f, el) {
+  _cFilter = f;
+  document.querySelectorAll('#v-containers .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderContainers();
+}
+function searchContainers(q) { _cSearch = q.toLowerCase(); renderContainers(); }
+
+function renderContainers() {
+  let data = containers;
+  if (_cFilter !== 'all') data = data.filter(c => c.status === _cFilter);
+  if (_cSearch) data = data.filter(c =>
+    (c.client_name||'').toLowerCase().includes(_cSearch) ||
+    (c.container_no||'').toLowerCase().includes(_cSearch) ||
+    (c.bl_number||'').toLowerCase().includes(_cSearch)
+  );
+  document.getElementById('containers-tbody').innerHTML = data.map(c => {
+    const costs = Number(c.total_costs || 0);
+    const profit = Number(c.invoice_amount) - costs;
+    return `<tr onclick="openContainerModal(${c.id})">
+      <td style="color:var(--text-muted)">${d(c.date_received)}</td>
+      <td style="font-weight:700;color:var(--white)">${c.client_name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">${c.container_no||'—'}</td>
+      <td>${c.container_size||'—'}</td>
+      <td style="color:var(--text-secondary)">${c.shipping_line||'—'}</td>
+      <td style="color:var(--text-secondary)">${d(c.eta)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${c.invoice_no||'—'}</td>
+      <td style="color:var(--gold-text);font-weight:700">UGX ${fmtM(c.invoice_amount)}</td>
+      <td style="color:var(--red)">UGX ${fmtM(costs)}</td>
+      <td style="color:${profit>=0?'var(--green)':'var(--red)'};font-weight:700">UGX ${fmtM(profit)}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td>${payBadge(c.pay_status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openContainerModal(${c.id})">Edit</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="13" style="text-align:center;padding:28px;color:var(--text-muted)">No containers found.</td></tr>';
+}
+
+// ── PAYMENTS ──────────────────────────────────────────────────
+function renderPayments() {
+  const total     = clientPayments.reduce((s,p) => s + Number(p.amount_paid||0), 0);
+  const outstanding = clientPayments.reduce((s,p) => {
+    const b = Number(p.total_amount||0) - Number(p.amount_paid||0);
+    return s + (b > 0 ? b : 0);
+  }, 0);
+  const paid    = clientPayments.filter(p => Number(p.total_amount) <= Number(p.amount_paid)).length;
+  const overdue = clientPayments.filter(p => Number(p.amount_paid||0) === 0).length;
+  document.getElementById('pay-collected').textContent  = fmtM(total);
+  document.getElementById('pay-outstanding').textContent = fmtM(outstanding);
+  document.getElementById('pay-overdue').textContent     = overdue;
+  document.getElementById('pay-paid').textContent        = paid;
+
+  document.getElementById('payments-tbody').innerHTML = clientPayments.map(p => {
+    const bal = Number(p.total_amount||0) - Number(p.amount_paid||0);
+    const s   = bal <= 0 ? 'Paid' : Number(p.amount_paid) > 0 ? 'Partial' : 'Unpaid';
+    return `<tr onclick="openPaymentModal(${p.id})">
+      <td style="font-weight:700;color:var(--white)">${p.client_name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${p.invoice_no||'—'}</td>
+      <td style="color:var(--gold-text)">UGX ${fmt(p.total_amount)}</td>
+      <td style="color:var(--green);font-weight:700">UGX ${fmt(p.amount_paid)}</td>
+      <td style="color:${bal>0?'var(--red)':'var(--text-muted)'};font-weight:${bal>0?700:400}">UGX ${fmt(Math.max(0,bal))}</td>
+      <td style="color:var(--text-secondary)">${d(p.payment_date)}</td>
+      <td>${payBadge(s)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openPaymentModal(${p.id})">Edit</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-muted)">No payment records yet.</td></tr>';
+}
+
+// ── SUPPLIERS ────────────────────────────────────────────────
+function renderSuppliers() {
+  // Update supplier stat cards from real data
+  const totalOwed = suppliers.reduce((s,x) => s + Number(x.total_owed||0), 0);
+  const totalPaid = suppliers.reduce((s,x) => s + Number(x.amount_paid||0), 0);
+  const arrears   = totalOwed - totalPaid;
+  const _s = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  _s('sup-total',   fmtM(totalOwed));
+  _s('sup-paid',    fmtM(totalPaid));
+  _s('sup-arrears', fmtM(Math.max(0,arrears)));
+  document.getElementById('suppliers-tbody').innerHTML = suppliers.map(s => {
+    const arr = Number(s.total_owed||0) - Number(s.amount_paid||0);
+    return `<tr onclick="openSupplierModal(${s.id})">
+      <td style="font-weight:700;color:var(--white)">${s.supplier_name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">${s.container_no||'—'}</td>
+      <td style="color:var(--text-secondary)">${s.service||'—'}</td>
+      <td>UGX ${fmt(s.total_owed)}</td>
+      <td style="color:var(--green);font-weight:700">UGX ${fmt(s.amount_paid)}</td>
+      <td style="color:${arr>0?'var(--red)':'var(--text-muted)'};font-weight:${arr>0?700:400}">UGX ${fmt(Math.max(0,arr))}</td>
+      <td style="color:var(--text-secondary)">${d(s.payment_date)}</td>
+      <td>${arr<=0?'<span class="badge b-cleared">Cleared</span>':'<span class="badge b-partial">Arrears</span>'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openSupplierModal(${s.id})">Edit</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--text-muted)">No supplier records yet.</td></tr>';
+}
+
+// ── EXPENSES ─────────────────────────────────────────────────
+function renderExpenses() {
+  // Update expense stat cards from real data
+  const total = expenses.reduce((s,e) => s + Number(e.amount||0), 0);
+  const week  = expenses.filter(e => {
+    if (!e.expense_date) return false;
+    const d7 = new Date(); d7.setDate(d7.getDate()-7);
+    return new Date(e.expense_date) >= d7;
+  }).reduce((s,e) => s + Number(e.amount||0), 0);
+  const cats = {};
+  expenses.forEach(e => { if(e.category) cats[e.category] = (cats[e.category]||0)+Number(e.amount||0); });
+  const topCat = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+  const _s = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  _s('exp-total',  fmtM(total));
+  _s('exp-week',   fmtM(week));
+  _s('exp-topcat', topCat ? topCat[0].split(' ')[0] : '—');
+  document.getElementById('expenses-tbody').innerHTML = expenses.map(e => `
+    <tr onclick="openExpenseModal(${e.id})">
+      <td style="color:var(--text-secondary)">${d(e.expense_date)}</td>
+      <td style="font-weight:600;color:var(--white)">${e.description}</td>
+      <td><span class="badge" style="background:var(--ink3);color:var(--text-secondary);border:1px solid var(--border)">${e.category||'—'}</span></td>
+      <td style="color:var(--red);font-weight:700">UGX ${fmt(e.amount)}</td>
+      <td style="color:var(--text-secondary)">${e.method||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">${e.container_no||'—'}</td>
+      <td style="color:var(--text-muted);font-size:12px">${e.notes||'—'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openExpenseModal(${e.id})">Edit</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-muted)">No expenses yet.</td></tr>';
+}
+
+// ── LOANS ────────────────────────────────────────────────────
+function renderLoans() {
+  // Update stats
+  const activeLoans = loans.filter(l => l.status === 'Active');
+  const totalLent   = activeLoans.reduce((s,l) => s + Number(l.amount||0), 0);
+  const interest    = repayments.reduce((s,r) => s + Number(r.amount_paid||0), 0);
+  const dueTodayCnt = dashSummary?.lending?.due_today_count || 0;
+  const lCards = document.querySelectorAll('#v-loans .stat-grid-4 .sc-val');
+  if (lCards[0]) lCards[0].textContent = activeLoans.length;
+  if (lCards[1]) lCards[1].textContent = fmtM(totalLent);
+  if (lCards[2]) lCards[2].textContent = fmtM(interest);
+  if (lCards[3]) lCards[3].textContent = dueTodayCnt;
+
+  document.getElementById('loans-grid').innerHTML = loans.map(l => {
+    const rate     = Number(l.interest_rate||0);
+    const interest = Math.round(Number(l.amount) * rate / 100);
+    const totalDue = Number(l.amount) + interest;
+    const repaid   = Number(l.total_repaid || 0);
+    const pct      = totalDue > 0 ? Math.min(100, Math.round(repaid / totalDue * 100)) : 0;
+    const cleared  = l.status === 'Cleared';
+    return `<div class="loan-card" onclick="openLoanModal(${l.id})">
+      <div class="loan-card-top">
+        <div>
+          <div class="loan-client">${l.client_name}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${d(l.date_issued)} · ${l.payment_period||'—'}</div>
+          ${l.container_no ? `<div style="font-size:10px;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-top:2px">${l.container_no}</div>` : ''}
+        </div>
+        <div class="badge ${cleared?'b-cleared':'b-active'}">${cleared?'CLEARED':'ACTIVE'}</div>
+      </div>
+      <div class="loan-amount">UGX ${fmtM(l.amount)}</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--purple);margin-top:2px">${rate}% interest</div>
+      <div class="loan-progress-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px;">
+          <span>Repaid: UGX ${fmtM(repaid)}</span><span>${pct}%</span>
+        </div>
+        <div class="loan-progress"><div class="loan-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="loan-meta">
+        <span>Total due: UGX ${fmtM(totalDue)}</span>
+        <span style="color:${cleared?'var(--green)':'var(--orange)'}">Balance: UGX ${fmtM(Math.max(0,totalDue-repaid))}</span>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">${l.notes||''}</div>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-muted);padding:24px">No loans recorded yet.</div>';
+}
+
+// ── REPAYMENTS ────────────────────────────────────────────────
+function renderRepayments() {
+  document.getElementById('repayments-tbody').innerHTML = repayments.map(r => {
+    const principal = Number(r.loan_principal || 0);
+    const rate      = Number(r.interest_rate || 0);
+    const totalDue  = principal + Math.round(principal * rate / 100);
+    // Compute running balance from this loan's repayments
+    const loanReps  = repayments.filter(x => x.loan_id === r.loan_id);
+    const idx       = loanReps.indexOf(r);
+    const soFar     = loanReps.slice(0, idx + 1).reduce((s, x) => s + Number(x.amount_paid||0), 0);
+    const bal       = Math.max(0, totalDue - soFar);
+    return `<tr>
+      <td style="color:var(--text-secondary)">${d(r.payment_date)}</td>
+      <td style="font-weight:700;color:var(--white)">${r.client_name}</td>
+      <td>UGX ${fmt(r.loan_principal)}</td>
+      <td style="color:var(--green);font-weight:700">UGX ${fmt(r.amount_paid)}</td>
+      <td><span class="badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)">${r.repay_type}</span></td>
+      <td style="color:${bal===0?'var(--green)':'var(--orange)'};font-weight:700">UGX ${fmt(bal)}</td>
+      <td style="color:var(--text-muted);font-size:12px">${r.notes||'—'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text-muted)">No repayments recorded yet.</td></tr>';
+}
+
+// ── REPORTS ───────────────────────────────────────────────────
+function renderReports() {
+  document.getElementById('report-tbody').innerHTML = containers.map(c => {
+    const costs  = Number(c.total_costs || 0);
+    const profit = Number(c.invoice_amount) - costs;
+    return `<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">${c.container_no||'—'}</td>
+      <td style="font-weight:700;color:var(--white)">${c.client_name}</td>
+      <td style="color:var(--text-secondary);font-size:12px">${c.items_desc||'—'}</td>
+      <td style="color:var(--gold-text);font-weight:700">UGX ${fmt(c.invoice_amount)}</td>
+      <td style="color:var(--red)">UGX ${fmt(costs)}</td>
+      <td style="color:${profit>=0?'var(--green)':'var(--red)'};font-weight:700">UGX ${fmt(profit)}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td style="color:var(--text-secondary)">${d(c.invoice_date)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--text-muted)">No data.</td></tr>';
+
+  // Report summary panel
+  const t = dashSummary?.transport;
+  if (t) {
+    const sumEl = document.querySelector('#v-reports .sc > div');
+    if (sumEl) {
+      const rows = sumEl.querySelectorAll('div');
+      if (rows[0]) rows[0].querySelector('span:last-child').textContent = t.total_jobs;
+      if (rows[1]) rows[1].querySelector('span:last-child').textContent = 'UGX ' + fmt(t.gross_revenue);
+      if (rows[2]) rows[2].querySelector('span:last-child').textContent = 'UGX ' + fmt(t.total_costs + t.total_expenses);
+      if (rows[3]) rows[3].querySelector('span:last-child').textContent = 'UGX ' + fmt(t.net_profit);
+    }
+  }
+}
+
+function renderCharts() {
+  const months = ['Oct','Nov','Dec','Jan','Feb','Mar'];
+  const revData = [42,58,35,71,65, dashSummary ? Number(dashSummary.transport.month_revenue)/1_000_000 : 0];
+  const cntData = [6,8,5,10,9, containers.filter(c => c.status === 'Delivered').length || 0];
+  const maxRev = Math.max(...revData, 1);
+  const maxCnt = Math.max(...cntData, 1);
+  document.getElementById('rev-chart').innerHTML = months.map((m,i) => `
+    <div class="bar-col">
+      <div class="bar-val">${revData[i].toFixed(1)}M</div>
+      <div class="bar" style="height:${Math.round(revData[i]/maxRev*80)}px;${i===5?'background:var(--gold);opacity:0.9':''}"></div>
+      <div class="bar-label">${m}</div>
+    </div>`).join('');
+  document.getElementById('cnt-chart').innerHTML = months.map((m,i) => `
+    <div class="bar-col">
+      <div class="bar-val">${cntData[i]}</div>
+      <div class="bar" style="height:${Math.round(cntData[i]/maxCnt*80)}px;background:var(--blue);opacity:${i===5?1:0.45}"></div>
+      <div class="bar-label">${m}</div>
+    </div>`).join('');
+  const revs = [42,58,35,71,65, dashSummary ? Number(dashSummary.transport.month_revenue)/1_000_000 : 0];
+  const exps = [28,36,22,45,42, dashSummary ? (Number(dashSummary.transport.total_expenses)+Number(dashSummary.transport.total_costs))/1_000_000 : 0];
+  const maxV = Math.max(...revs,...exps, 1);
+  const rMonths = ['Oct','Nov','Dec','Jan','Feb','Mar'];
+  document.getElementById('rev-exp-chart').innerHTML = rMonths.map((m,i) => `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;">
+      <div style="display:flex;gap:2px;align-items:flex-end;width:100%;">
+        <div style="flex:1;background:var(--gold);border-radius:2px 2px 0 0;height:${Math.round(revs[i]/maxV*80)}px;opacity:${i===5?1:0.45}"></div>
+        <div style="flex:1;background:var(--red);border-radius:2px 2px 0 0;height:${Math.round(exps[i]/maxV*80)}px;opacity:${i===5?0.8:0.3}"></div>
+      </div>
+      <div style="font-size:9px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">${m}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODAL STATE
+// ══════════════════════════════════════════════════════════════
+let costRows       = [];
+let editContId     = null;
+let editPayId      = null;
+let editSupId      = null;
+let editExpId      = null;
+let editLoanId     = null;
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── COST ROWS ─────────────────────────────────────────────────
+function addCostRow(desc='', amt='', date='', category='General') {
+  const rid = Date.now() + Math.random();
+  costRows.push({ id: rid });
+  const list = document.getElementById('costs-list');
+  const row  = document.createElement('div');
+  row.className = 'cost-item';
+  row.id = 'cr-' + rid;
+  row.innerHTML = `
+    <input style="background:var(--ink2);border:1px solid var(--border-strong);color:var(--white);padding:7px 10px;border-radius:5px;font-size:12.5px;width:100%;font-family:'Plus Jakarta Sans',sans-serif;"
+      placeholder="e.g. Port handling" value="${desc}" oninput="calcProfit()">
+    <input type="number" style="background:var(--ink2);border:1px solid var(--border-strong);color:var(--white);padding:7px 10px;border-radius:5px;font-size:12.5px;width:100%;font-family:'Plus Jakarta Sans',sans-serif;"
+      placeholder="Amount (UGX)" value="${amt}" oninput="calcProfit()">
+    <input type="date" style="background:var(--ink2);border:1px solid var(--border-strong);color:var(--text-secondary);padding:7px 10px;border-radius:5px;font-size:12px;width:100%;" value="${date}">
+    <button onclick="removeCostRow('${rid}')" style="background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);cursor:pointer;border-radius:5px;padding:6px 9px;font-size:13px;line-height:1;">✕</button>`;
+  list.appendChild(row);
+  calcProfit();
+}
+
+function removeCostRow(id) {
+  costRows = costRows.filter(r => String(r.id) !== String(id));
+  document.getElementById('cr-'+id)?.remove();
+  calcProfit();
+}
+
+function getCosts() {
+  return costRows.map(r => {
+    const el = document.getElementById('cr-' + r.id);
+    if (!el) return null;
+    const ins = el.querySelectorAll('input');
+    return { description: ins[0]?.value||'', amount: parseInt(ins[1]?.value)||0, cost_date: ins[2]?.value||null };
+  }).filter(x => x && (x.description || x.amount));
+}
+
+function calcProfit() {
+  const inv   = parseInt(document.getElementById('c-invoice-amt').value)||0;
+  const total = getCosts().reduce((s,c) => s+c.amount, 0);
+  document.getElementById('total-costs-display').textContent = 'UGX ' + fmt(total);
+  const profit = inv - total;
+  document.getElementById('c-profit').value = 'UGX ' + fmt(profit);
+  document.getElementById('c-profit').style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+}
+
+// ── CONTAINER MODAL ───────────────────────────────────────────
+function openContainerModal(id) {
+  costRows = [];
+  document.getElementById('costs-list').innerHTML = `
+    <div class="cost-item cost-hd">
+      <span>Description</span><span>Amount (UGX)</span><span>Date</span><span></span>
+    </div>`;
+  document.getElementById('c-del-btn').style.display = 'none';
+  editContId = null;
+
+  if (id) {
+    showLoader(true);
+    apiGet('/transport-jobs?id=' + id).then(c => {
+      editContId = c.id;
+      document.getElementById('container-modal-title').textContent = 'Edit Container Job';
+      document.getElementById('c-del-btn').style.display = 'block';
+      document.getElementById('c-date-recv').value    = d(c.date_received) === '—' ? '' : d(c.date_received);
+      document.getElementById('c-client').value       = c.client_name || '';
+      document.getElementById('c-bl').value           = c.bl_number || '';
+      document.getElementById('c-container-no').value = c.container_no || '';
+      document.getElementById('c-size').value         = c.container_size || '20ft';
+      document.getElementById('c-weight').value       = c.weight_kg || '';
+      document.getElementById('c-shipping-line').value= c.shipping_line || 'MSC';
+      document.getElementById('c-items').value        = c.items_desc || '';
+      document.getElementById('c-eta').value          = d(c.eta) === '—' ? '' : d(c.eta);
+      document.getElementById('c-status').value       = c.status || 'Pending';
+      document.getElementById('c-invoice-no').value   = c.invoice_no || '';
+      document.getElementById('c-date-invoice').value = d(c.invoice_date) === '—' ? '' : d(c.invoice_date);
+      document.getElementById('c-invoice-amt').value  = c.invoice_amount || '';
+      document.getElementById('c-notes').value        = c.notes || '';
+      (c.costs || []).forEach(cost => addCostRow(cost.description, cost.amount, d(cost.cost_date) === '—' ? '' : d(cost.cost_date)));
+    }).catch(() => toast('Could not load container', 'err'))
+      .finally(() => showLoader(false));
+  } else {
+    document.getElementById('container-modal-title').textContent = 'New Container Job';
+    ['c-date-recv','c-client','c-bl','c-container-no','c-weight','c-items','c-eta',
+     'c-invoice-no','c-date-invoice','c-invoice-amt','c-notes'].forEach(k => document.getElementById(k).value = '');
+    document.getElementById('c-status').value = 'Pending';
+    document.getElementById('c-profit').value = '';
+    document.getElementById('total-costs-display').textContent = 'UGX 0';
+    addCostRow();
+  }
+  document.getElementById('container-overlay').classList.add('open');
+}
+
+async function saveContainer() {
+  const client = document.getElementById('c-client').value.trim();
+  if (!client) { alert('Client name is required.'); return; }
+  const payload = {
+    client_name:    client,
+    date_received:  document.getElementById('c-date-recv').value || null,
+    bl_number:      document.getElementById('c-bl').value,
+    container_no:   document.getElementById('c-container-no').value,
+    container_size: document.getElementById('c-size').value,
+    weight_kg:      parseInt(document.getElementById('c-weight').value)||null,
+    shipping_line:  document.getElementById('c-shipping-line').value,
+    items_desc:     document.getElementById('c-items').value,
+    eta:            document.getElementById('c-eta').value || null,
+    status:         document.getElementById('c-status').value,
+    invoice_no:     document.getElementById('c-invoice-no').value,
+    invoice_date:   document.getElementById('c-date-invoice').value || null,
+    invoice_amount: parseInt(document.getElementById('c-invoice-amt').value)||0,
+    pay_status:     'Unpaid',
+    notes:          document.getElementById('c-notes').value,
+    costs:          getCosts(),
+  };
+  closeModal('container-overlay');
+  showLoader(true);
+  try {
+    if (editContId) {
+      const updated = await apiPut('/transport-jobs?id='+editContId, payload);
+      const idx = containers.findIndex(x => x.id === editContId);
+      if (idx !== -1) containers[idx] = { ...updated, total_costs: updated.costs?.reduce((s,c)=>s+Number(c.amount),0)||0 };
+    } else {
+      const created = await apiPost('/transport-jobs', payload);
+      containers.unshift({ ...created, total_costs: created.costs?.reduce((s,c)=>s+Number(c.amount),0)||0 });
+    }
+    toast('Container job saved ✓');
+    dashSummary = await apiGet('/dashboard-summary');
+    renderAll();
+  } catch(e) {
+    toast('Error: ' + e.message, 'err');
+  } finally { showLoader(false); }
+}
+
+async function deleteContainer() {
+  if (!confirm('Delete this container job?')) return;
+  closeModal('container-overlay');
+  showLoader(true);
+  try {
+    await apiDel('/transport-jobs?id=' + editContId);
+    containers = containers.filter(x => x.id !== editContId);
+    dashSummary = await apiGet('/dashboard-summary');
+    renderAll();
+    toast('Container deleted.');
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+  finally { showLoader(false); }
+}
+
+// ── PAYMENT MODAL ─────────────────────────────────────────────
+function openPaymentModal(id) {
+  editPayId = id || null;
+  const p = id ? clientPayments.find(x => x.id === id) : null;
+  document.querySelector('#payment-overlay .modal-title').textContent = p ? 'Edit Payment' : 'Record Client Payment';
+  document.getElementById('pay-client').value   = p?.client_name || '';
+  document.getElementById('pay-invoice').value  = p?.invoice_no || '';
+  document.getElementById('pay-total').value    = p?.total_amount || '';
+  document.getElementById('pay-paid-amt').value = p?.amount_paid || '';
+  document.getElementById('pay-date').value     = d(p?.payment_date) === '—' ? '' : d(p?.payment_date);
+  document.getElementById('pay-method').value   = p?.method || 'Bank Transfer';
+  document.getElementById('pay-notes').value    = p?.notes || '';
+  document.getElementById('payment-overlay').classList.add('open');
+}
+
+async function savePayment() {
+  const client = document.getElementById('pay-client').value.trim();
+  if (!client) { alert('Client name required.'); return; }
+  const payload = {
+    client_name:  client,
+    invoice_no:   document.getElementById('pay-invoice').value,
+    total_amount: parseInt(document.getElementById('pay-total').value)||0,
+    amount_paid:  parseInt(document.getElementById('pay-paid-amt').value)||0,
+    payment_date: document.getElementById('pay-date').value || null,
+    method:       document.getElementById('pay-method').value,
+    notes:        document.getElementById('pay-notes').value,
+  };
+  closeModal('payment-overlay');
+  showLoader(true);
+  try {
+    if (editPayId) {
+      const r = await apiPut('/transport-payments?id='+editPayId, payload);
+      const i = clientPayments.findIndex(x => x.id === editPayId);
+      if (i !== -1) clientPayments[i] = r;
+    } else {
+      const r = await apiPost('/transport-payments', payload);
+      clientPayments.unshift(r);
+    }
+    toast('Payment saved ✓');
+    renderAll();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+  finally { showLoader(false); }
+}
+
+// ── SUPPLIER MODAL ────────────────────────────────────────────
+function openSupplierModal(id) {
+  editSupId = id || null;
+  const s = id ? suppliers.find(x => x.id === id) : null;
+  document.querySelector('#supplier-overlay .modal-title').textContent = s ? 'Edit Supplier Payment' : 'Supplier Payment';
+  document.getElementById('sup-name').value      = s?.supplier_name || '';
+  document.getElementById('sup-container').value = s?.container_no || '';
+  document.getElementById('sup-service').value   = s?.service || '';
+  document.getElementById('sup-total').value     = s?.total_owed || '';
+  document.getElementById('sup-paid').value      = s?.amount_paid || '';
+  document.getElementById('sup-date').value      = d(s?.payment_date) === '—' ? '' : d(s?.payment_date);
+  document.getElementById('sup-notes').value     = s?.notes || '';
+  document.getElementById('supplier-overlay').classList.add('open');
+}
+
+async function saveSupplier() {
+  const name = document.getElementById('sup-name').value.trim();
+  if (!name) { alert('Supplier name required.'); return; }
+  const payload = {
+    supplier_name: name,
+    container_no:  document.getElementById('sup-container').value,
+    service:       document.getElementById('sup-service').value,
+    total_owed:    parseInt(document.getElementById('sup-total').value)||0,
+    amount_paid:   parseInt(document.getElementById('sup-paid').value)||0,
+    payment_date:  document.getElementById('sup-date').value || null,
+    notes:         document.getElementById('sup-notes').value,
+  };
+  closeModal('supplier-overlay');
+  showLoader(true);
+  try {
+    if (editSupId) {
+      const r = await apiPut('/supplier-payments?id='+editSupId, payload);
+      const i = suppliers.findIndex(x => x.id === editSupId);
+      if (i !== -1) suppliers[i] = r;
+    } else {
+      suppliers.unshift(await apiPost('/supplier-payments', payload));
+    }
+    toast('Supplier payment saved ✓');
+    renderAll();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+  finally { showLoader(false); }
+}
+
+// ── EXPENSE MODAL ─────────────────────────────────────────────
+function openExpenseModal(id) {
+  editExpId = id || null;
+  const e = id ? expenses.find(x => x.id === id) : null;
+  document.querySelector('#expense-overlay .modal-title').textContent = e ? 'Edit Expense' : 'Add Expense';
+  document.getElementById('ex-date').value      = e ? (d(e.expense_date) === '—' ? '' : d(e.expense_date)) : new Date().toISOString().split('T')[0];
+  document.getElementById('ex-cat').value       = e?.category || '';
+  document.getElementById('ex-desc').value      = e?.description || '';
+  document.getElementById('ex-amount').value    = e?.amount || '';
+  document.getElementById('ex-method').value    = e?.method || 'Cash';
+  document.getElementById('ex-container').value = e?.container_no || '';
+  document.getElementById('ex-notes').value     = e?.notes || '';
+  document.getElementById('expense-overlay').classList.add('open');
+}
+
+async function saveExpense() {
+  const desc = document.getElementById('ex-desc').value.trim();
+  const amt  = parseInt(document.getElementById('ex-amount').value)||0;
+  if (!desc || !amt) { alert('Description and amount required.'); return; }
+  const payload = {
+    expense_date: document.getElementById('ex-date').value || null,
+    description:  desc,
+    category:     document.getElementById('ex-cat').value,
+    amount:       amt,
+    method:       document.getElementById('ex-method').value,
+    container_no: document.getElementById('ex-container').value,
+    notes:        document.getElementById('ex-notes').value,
+  };
+  closeModal('expense-overlay');
+  showLoader(true);
+  try {
+    if (editExpId) {
+      const r = await apiPut('/expenses?id='+editExpId, payload);
+      const i = expenses.findIndex(x => x.id === editExpId);
+      if (i !== -1) expenses[i] = r;
+    } else {
+      expenses.unshift(await apiPost('/expenses', payload));
+    }
+    toast('Expense saved ✓');
+    renderAll();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+  finally { showLoader(false); }
+}
+
+// ── LOAN MODAL ────────────────────────────────────────────────
+function openLoanModal(id) {
+  editLoanId = id || null;
+  const l = id ? loans.find(x => x.id === id) : null;
+  document.querySelector('#loan-overlay .modal-title').textContent = l ? 'Edit Loan' : 'New Loan';
+  document.getElementById('ln-client').value    = l?.client_name || '';
+  document.getElementById('ln-amount').value    = l?.amount || '';
+  document.getElementById('ln-rate').value      = l?.interest_rate || '';
+  document.getElementById('ln-date').value      = l ? (d(l.date_issued) === '—' ? '' : d(l.date_issued)) : new Date().toISOString().split('T')[0];
+  document.getElementById('ln-period').value    = l?.payment_period || '30 days';
+  document.getElementById('ln-container').value = l?.container_no || '';
+  document.getElementById('ln-notes').value     = l?.notes || '';
+  document.getElementById('loan-overlay').classList.add('open');
+}
+
+async function saveLoan() {
+  const client = document.getElementById('ln-client').value.trim();
+  const amount = parseInt(document.getElementById('ln-amount').value)||0;
+  if (!client || !amount) { alert('Client name and amount required.'); return; }
+  const payload = {
+    client_name:    client,
+    amount,
+    interest_rate:  parseFloat(document.getElementById('ln-rate').value)||0,
+    date_issued:    document.getElementById('ln-date').value || null,
+    payment_period: document.getElementById('ln-period').value,
+    container_no:   document.getElementById('ln-container').value,
+    notes:          document.getElementById('ln-notes').value,
+  };
+  closeModal('loan-overlay');
+  showLoader(true);
+  try {
+    if (editLoanId) {
+      const r = await apiPut('/loans?id='+editLoanId, payload);
+      const i = loans.findIndex(x => x.id === editLoanId);
+      if (i !== -1) loans[i] = r;
+    } else {
+      loans.unshift(await apiPost('/loans', payload));
+    }
+    dashSummary = await apiGet('/dashboard-summary');
+    toast('Loan saved ✓');
+    renderAll();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+  finally { showLoader(false); }
+}
+
+// ── REPAYMENT MODAL ───────────────────────────────────────────
+function openRepayModal() {
+  const sel = document.getElementById('rp-client');
+  sel.innerHTML = '<option value="">Select client...</option>' +
+    loans.filter(l => l.status === 'Active').map(l => `<option value="${l.id}">${l.client_name}</option>`).join('');
+  document.getElementById('rp-amount').value = '';
+  document.getElementById('rp-date').value   = new Date().toISOString().split('T')[0];
+  document.getElementById('rp-type').value   = 'Both';
+  document.getElementById('rp-notes').value  = '';
+  document.getElementById('repay-overlay').classList.add('open');
+}
+
+async function saveRepayment() {
+  const loanId = document.getElementById('rp-client').value;
+  const amount = parseInt(document.getElementById('rp-amount').value)||0;
+  if (!loanId || !amount) { alert('Select a client and enter amount.'); return; }
+  const payload = {
+    loan_id:      parseInt(loanId),
+    amount_paid:  amount,
+    payment_date: document.getElementById('rp-date').value || null,
+    repay_type:   document.getElementById('rp-type').value,
+    notes:        document.getElementById('rp-notes').value,
+  };
+  closeModal('repay-overlay');
+  showLoader(true);
+  try {
+    const r = await apiPost('/loan-repayments', payload);
+    repayments.unshift(r);
+    // Refresh loan status
+    loans = await apiGet('/loans');
+    dashSummary = await apiGet('/dashboard-summary');
+    toast('Repayment recorded ✓');
+    renderAll();
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+  finally { showLoader(false); }
+}
+
+// ── NAV ───────────────────────────────────────────────────────
+function nav(id, el, title) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('v-'+id).classList.add('active');
+  if (el?.classList) el.classList.add('active');
+  document.getElementById('tb-title').textContent = title;
+  document.querySelectorAll('tbody tr.row-selected').forEach(r => r.classList.remove('row-selected'));
+  // Sync mobile bottom nav
+  if (typeof syncMobNav === 'function') syncMobNav(id);
+}
+
+// ── ROW SELECTION ─────────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const td = e.target.closest('td');
+  if (!td) return;
+  const tr = td.closest('tr');
+  if (!tr || !tr.closest('tbody')) return;
+  const tbody = tr.closest('tbody');
+  tbody.querySelectorAll('tr.row-selected').forEach(r => { if (r !== tr) r.classList.remove('row-selected'); });
+  tr.classList.toggle('row-selected');
+});
+
+// ── BACKDROP CLOSE ────────────────────────────────────────────
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+});
+
+// ── BOOT ─────────────────────────────────────────────────────
+loadAll();
+
+// ── MOBILE NAV ───────────────────────────────────────────────
+function toggleMobSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('mob-overlay');
+  if (sidebar.classList.contains('mob-open')) {
+    closeMobSidebar();
+  } else {
+    sidebar.classList.add('mob-open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobSidebar() {
+  document.querySelector('.sidebar').classList.remove('mob-open');
+  document.getElementById('mob-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function mobNav(id, title, el) {
+  document.getElementById('mob-more-drawer').classList.remove('open');
+  document.querySelectorAll('.mob-nav-item').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  const si = document.querySelector(`.sb-item[onclick*="${id}"]`);
+  nav(id, si, title);
+  closeMobSidebar();
+}
+function mobNavMore(id, title) {
+  document.getElementById('mob-more-drawer').classList.remove('open');
+  document.querySelectorAll('.mob-nav-item').forEach(x => x.classList.remove('active'));
+  document.getElementById('mn-more').classList.add('active');
+  const si = document.querySelector(`.sb-item[onclick*="${id}"]`);
+  nav(id, si, title);
+}
+function toggleMoreDrawer() {
+  document.getElementById('mob-more-drawer').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  const drawer = document.getElementById('mob-more-drawer');
+  if (!drawer) return;
+  if (drawer.classList.contains('open') &&
+      !drawer.contains(e.target) &&
+      !e.target.closest('#mn-more')) {
+    drawer.classList.remove('open');
+  }
+});
+// Sync bottom nav when desktop sidebar nav is called
+function syncMobNav(id) {
+  const map = {'dashboard':'mn-dashboard','containers':'mn-containers',
+    'loans':'mn-loans','payments':'mn-payments',
+    'loan-repayments':'mn-more','suppliers':'mn-more',
+    'expenses':'mn-more','reports':'mn-more'};
+  document.querySelectorAll('.mob-nav-item').forEach(x => x.classList.remove('active'));
+  const mid = map[id];
+  if (mid) document.getElementById(mid)?.classList.add('active');
+}
+</script>
+</body>
+</html>
