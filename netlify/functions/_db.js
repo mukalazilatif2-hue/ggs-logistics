@@ -1,13 +1,12 @@
 // netlify/functions/_db.js
-// Shared database + response helpers used by every function
-
 const { neon } = require('@neondatabase/serverless');
 
 function getDb() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set');
-  }
-  return neon(process.env.DATABASE_URL);
+  const url = process.env.DATABASE_URL 
+    || process.env.NETLIFY_DATABASE_URL
+    || process.env.NETLIFY_DATABASE_URL_UNPOOLED;
+  if (!url) throw new Error('No database URL configured');
+  return neon(url);
 }
 
 const CORS = {
@@ -19,10 +18,8 @@ const CORS = {
 
 const ok  = (data, status = 200) =>
   ({ statusCode: status, headers: CORS, body: JSON.stringify(data) });
-
 const err = (msg, status = 400) =>
   ({ statusCode: status, headers: CORS, body: JSON.stringify({ error: msg }) });
-
 const pre = () =>
   ({ statusCode: 204, headers: CORS, body: '' });
 
